@@ -1,0 +1,36 @@
+import os
+import hashlib
+
+def calcular_hash(nombre_archivo):
+    sha256 = hashlib.sha256()
+    with open(nombre_archivo, "rb") as archivo:
+        contenido = archivo.read()
+        sha256.update(contenido)
+    return sha256.hexdigest()
+
+def escanear_directorio(directorio, extension):
+    archivos_infected = []
+    for carpeta_raiz, directorios, archivos in os.walk(directorio):
+        for archivo in archivos:
+            if archivo.endswith(extension):
+                ruta_completa = os.path.join(carpeta_raiz, archivo)
+                hash_archivo = calcular_hash(ruta_completa)
+                if hash_archivo in base_de_datos_de_hashes:
+                    archivos_infected.append(ruta_completa)
+                else:
+                    base_de_datos_de_hashes.add(hash_archivo)
+    return archivos_infected
+
+if __name__ == "__main__":
+    base_de_datos_de_hashes = set()
+    directorio_a_escanear = "/ruta/del/directorio/a/escanear"
+    extension_a_buscar = ".exe"  # Puedes cambiar la extensión según tus necesidades
+
+    archivos_infected = escanear_directorio(directorio_a_escanear, extension_a_buscar)
+
+    if archivos_infected:
+        print("¡Se encontraron archivos infectados!")
+        for archivo in archivos_infected:
+            print(f"Archivo infectado: {archivo}")
+    else:
+        print("No se encontraron archivos infectados.")
